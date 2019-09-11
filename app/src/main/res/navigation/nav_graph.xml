@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/giphyTrendingFragment">
+
+    <fragment
+        android:id="@+id/giphyTrendingFragment"
+        android:name="com.example.giphyviewer.GiphyTrendingFragment"
+        android:label="fragment_giphy_trending"
+        tools:layout="@layout/fragment_giphy_trending">
+        
+        <action
+            android:id="@+id/action_giphyTrendingFragment_to_showGIFFragment"
+            app:destination="@id/showGIFFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/showGIFFragment"
+        android:name="com.example.giphyviewer.ShowGIFFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:label="fragment_show_gif"
+        tools:layout="@layout/fragment_show_gif" />
+</navigation>
