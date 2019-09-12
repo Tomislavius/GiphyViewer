@@ -1,6 +1,10 @@
-package com.example.giphyviewer;
+package com.example.giphyviewer.models;
 
-class GIFData {
+import java.io.Serializable;
+
+import io.realm.RealmObject;
+
+public class GIFData {
 
     private Images images;
 

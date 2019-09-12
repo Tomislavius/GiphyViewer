@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/giphyTrendingFragment"
-        android:name="com.example.giphyviewer.GiphyTrendingFragment"
+        android:name="com.example.giphyviewer.TrendingGifsFragment"
         android:label="fragment_giphy_trending"
         tools:layout="@layout/fragment_giphy_trending">
         
@@ -22,5 +22,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:label="fragment_show_gif"
-        tools:layout="@layout/fragment_show_gif" />
+        tools:layout="@layout/fragment_show_gif" >
+        <argument
+            android:name="url"
+            app:argType="string" />
+    </fragment>
 </navigation>

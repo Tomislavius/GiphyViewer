@@ -1,6 +1,6 @@
 package com.example.giphyviewer.networking;
 
-import com.example.giphyviewer.GIFModel;
+import com.example.giphyviewer.models.GIFModel;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

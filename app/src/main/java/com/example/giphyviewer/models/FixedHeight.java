@@ -1,6 +1,6 @@
-package com.example.giphyviewer;
+package com.example.giphyviewer.models;
 
-class FixedHeight {
+public class FixedHeight {
 
     private String url;
 

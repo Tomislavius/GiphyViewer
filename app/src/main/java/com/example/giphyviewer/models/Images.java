@@ -1,4 +1,4 @@
-package com.example.giphyviewer;
+package com.example.giphyviewer.models;
 
 import com.google.gson.annotations.SerializedName;
 
