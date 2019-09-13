@@ -19,7 +19,7 @@ public class RemoteRepositoryImpl implements RemoteRepository {
     private MutableLiveData<ArrayList<GIFData>> listMutableLiveData = new MutableLiveData<>();
     private LocalRepository localRepository = new LocalRepositoryImpl();
 
-    public LiveData<ArrayList<GIFData>> getGifData(){
+    public LiveData<ArrayList<GIFData>> getGifData() {
         return listMutableLiveData;
     }
 
@@ -43,4 +43,26 @@ public class RemoteRepositoryImpl implements RemoteRepository {
             }
         });
     }
+
+    @Override
+    public void searchGIF(String userInput) {
+        GiphyAPI service = ServiceGenerator.createService(GiphyAPI.class);
+
+        service.searchGif(userInput, 10).enqueue(new Callback<GIFModel>() {
+            @Override
+            public void onResponse(Call<GIFModel> call, Response<GIFModel> response) {
+                if (response.isSuccessful()) {
+                    listMutableLiveData.postValue(response.body().getGifData());
+                    localRepository.saveGIFs(response.body().getGifData());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GIFModel> call, Throwable t) {
+                //TODO hendlati failure
+            }
+        });
+    }
+
+
 }

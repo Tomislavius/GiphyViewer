@@ -54,6 +54,7 @@ public class GIFRecyclerVIewAdapter extends RecyclerView.Adapter<GIFRecyclerVIew
     }
 
     public void setData(ArrayList<GIFData> list) {
+        this.list.clear();
         this.list.addAll(list);
         notifyDataSetChanged();
     }

@@ -16,13 +16,10 @@ public class TrendingGifsViewModel extends ViewModel {
 
     public LiveData<ArrayList<GIFData>> getData() {
         return remoteRepository.getGifData();
-//        gifData.addSource(remoteRepository.getGifData(), new Observer<ArrayList<GIFData>>() {
-//            @Override
-//            public void onChanged(@Nullable ArrayList<GIFData> apiResponse) {
-//                gifData.setValue(apiResponse);
-//            }
-//        });
-//        return gifData;
+    }
+
+    public void getResultsFromSearch(String userInput){
+        remoteRepository.searchGIF(userInput);
     }
 
     public void loadTrendingGifs() {

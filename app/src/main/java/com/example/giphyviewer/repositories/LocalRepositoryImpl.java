@@ -5,7 +5,6 @@ import com.example.giphyviewer.models.GIFData;
 import java.util.ArrayList;
 
 import io.realm.Realm;
-import io.realm.RealmModel;
 
 public class LocalRepositoryImpl implements LocalRepository {
 
