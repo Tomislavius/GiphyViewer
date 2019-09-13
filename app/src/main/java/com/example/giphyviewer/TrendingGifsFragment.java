@@ -1,6 +1,7 @@
 package com.example.giphyviewer;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.giphyviewer.adapters.GIFRecyclerVIewAdapter;
 import com.example.giphyviewer.databinding.FragmentGiphyTrendingBinding;
@@ -24,6 +26,7 @@ public class TrendingGifsFragment extends Fragment {
     private GIFRecyclerVIewAdapter adapter;
     private FragmentGiphyTrendingBinding binding;
     private TrendingGifsViewModel viewModel;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,6 +36,21 @@ public class TrendingGifsFragment extends Fragment {
         viewModel.loadTrendingGifs();
         adapter = new GIFRecyclerVIewAdapter();
         binding.gifsRv.setAdapter(adapter);
+
+        binding.refreshSr.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                viewModel.loadTrendingGifs();
+                binding.gifsRv.setAdapter(adapter);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        binding.refreshSr.setRefreshing(false);
+                    }
+                },2000);
+            }
+        });
 
         initObserver();
 
