@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 import io.realm.RealmList;
 
-public class TrendingGifsFragment extends Fragment {
+public class TrendingGifsFragment extends Fragment implements GIFRecyclerVIewAdapter.OnLoadMoreListener {
 
     private GIFRecyclerVIewAdapter adapter;
     private FragmentGiphyTrendingBinding binding;
@@ -49,13 +49,13 @@ public class TrendingGifsFragment extends Fragment {
         binding.refreshSr.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                viewModel.loadTrendingGifs();
+                viewModel.loadTrendingGifs(0);
             }
         });
     }
 
     private void setupRecyclerViewAdapter() {
-        adapter = new GIFRecyclerVIewAdapter();
+        adapter = new GIFRecyclerVIewAdapter(this);
         binding.gifsRv.setAdapter(adapter);
     }
 
@@ -70,7 +70,7 @@ public class TrendingGifsFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().isEmpty()) {
                     if (viewModel.getData().getValue() == null) {
-                        viewModel.loadTrendingGifs();
+                        viewModel.loadTrendingGifs(0);
                     }
                 } else {
                     viewModel.getResultsFromSearch(s.toString());
@@ -88,8 +88,7 @@ public class TrendingGifsFragment extends Fragment {
         viewModel.getData().observe(this, new Observer<RealmList<GIFData>>() {
             @Override
             public void onChanged(RealmList<GIFData> gifData) {
-                adapter.setData(gifData);
-                binding.refreshSr.setRefreshing(false);
+                adapter.addData(gifData);
             }
         });
 
@@ -104,5 +103,18 @@ public class TrendingGifsFragment extends Fragment {
                 }
             }
         });
+
+        viewModel.getRefreshList().observe(this, new Observer<RealmList<GIFData>>() {
+            @Override
+            public void onChanged(RealmList<GIFData> gifData) {
+                adapter.setData(gifData);
+                binding.refreshSr.setRefreshing(false);
+            }
+        });
+    }
+
+    @Override
+    public void onLoadMore(int offset) {
+        viewModel.loadTrendingGifs(offset);
     }
 }

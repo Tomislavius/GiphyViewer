@@ -11,7 +11,7 @@ import io.realm.RealmList;
 public class TrendingGifsViewModel extends ViewModel {
 
     public TrendingGifsViewModel() {
-        loadTrendingGifs();
+        loadTrendingGifs(0);
     }
 
     private RemoteRepositoryImpl remoteRepository = new RemoteRepositoryImpl();
@@ -24,11 +24,15 @@ public class TrendingGifsViewModel extends ViewModel {
         remoteRepository.searchGIF(userInput);
     }
 
-    void loadTrendingGifs() {
-        remoteRepository.loadTrendingGifs();
+    void loadTrendingGifs(int offset) {
+        remoteRepository.loadTrendingGifs(offset);
     }
 
     LiveData<Boolean> getLoadingGifsError(){
         return remoteRepository.getLoadingGifsError();
+    }
+
+    LiveData<RealmList<GIFData>> getRefreshList() {
+        return remoteRepository.getRefreshTrendingList();
     }
 }

@@ -14,10 +14,10 @@ import retrofit2.http.Url;
 public interface GiphyAPI {
 
     @GET("trending")
-    Call<GIFModel> getTrendingGIFs(@Query("offset") int offset, @Query("limit") int limit);
+    Call<GIFModel> getTrendingGIFs(@Query("offset") int offset);
 
     @GET("search")
-    Call<GIFModel> searchGif(@Query("q") String q, @Query("limit") int limit);
+    Call<GIFModel> searchGif(@Query("q") String q);
 
     @Multipart
     @POST()

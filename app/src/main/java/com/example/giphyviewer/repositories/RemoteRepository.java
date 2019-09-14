@@ -4,7 +4,7 @@ import okhttp3.MultipartBody;
 
 public interface RemoteRepository {
 
-    void loadTrendingGifs();
+    void loadTrendingGifs(int offset);
 
     void searchGIF(String userInput);
 

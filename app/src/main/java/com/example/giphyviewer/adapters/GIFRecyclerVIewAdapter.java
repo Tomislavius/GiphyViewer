@@ -22,6 +22,11 @@ import io.realm.RealmList;
 public class GIFRecyclerVIewAdapter extends RecyclerView.Adapter<GIFRecyclerVIewAdapter.GIFViewHolder> {
 
     private ArrayList<GIFData> list = new ArrayList<>();
+    private OnLoadMoreListener loadMoreListener;
+
+    public GIFRecyclerVIewAdapter(OnLoadMoreListener loadMoreListener){
+        this.loadMoreListener = loadMoreListener;
+    }
 
     @NonNull
     @Override
@@ -33,10 +38,11 @@ public class GIFRecyclerVIewAdapter extends RecyclerView.Adapter<GIFRecyclerVIew
 
     @Override
     public void onBindViewHolder(@NonNull final GIFViewHolder holder, final int position) {
-
         loadGIF(holder, position);
-
         openGIF(holder, position);
+        if (position >= (getItemCount() - 1)) {
+            loadMoreListener.onLoadMore(getItemCount());
+        }
     }
 
     private void openGIF(@NonNull GIFViewHolder holder, int position) {
@@ -70,14 +76,21 @@ public class GIFRecyclerVIewAdapter extends RecyclerView.Adapter<GIFRecyclerVIew
         notifyDataSetChanged();
     }
 
-    class GIFViewHolder extends RecyclerView.ViewHolder {
+    public void addData(RealmList<GIFData> list){
+        this.list.addAll(list);
+        notifyItemRangeInserted(getItemCount() - list.size(), list.size());
+    }
 
+    class GIFViewHolder extends RecyclerView.ViewHolder {
         private ImageView gif;
 
         GIFViewHolder(@NonNull View itemView) {
             super(itemView);
-
             gif = itemView.findViewById(R.id.gif_iv);
         }
+    }
+
+    public interface OnLoadMoreListener {
+        void onLoadMore(int i);
     }
 }

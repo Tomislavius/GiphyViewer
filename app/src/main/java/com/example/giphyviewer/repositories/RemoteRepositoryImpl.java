@@ -10,8 +10,6 @@ import com.example.giphyviewer.models.GIFModel;
 import com.example.giphyviewer.networking.GiphyAPI;
 import com.example.giphyviewer.networking.ServiceGenerator;
 
-import java.util.ArrayList;
-
 import io.realm.RealmList;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
@@ -20,14 +18,17 @@ import retrofit2.Response;
 
 public class RemoteRepositoryImpl implements RemoteRepository {
 
-    private MutableLiveData<RealmList<GIFData>> listMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<RealmList<GIFData>> trendingList = new MutableLiveData<>();
+
+
+    private MutableLiveData<RealmList<GIFData>> refreshTrendingList = new MutableLiveData<>();
     private MutableLiveData<Boolean> loadingGifsError = new MutableLiveData<>();
     private SingleLiveEvent<Boolean> uploadFileSuccess = new SingleLiveEvent<>();
     private SingleLiveEvent<String> uploadFileError = new SingleLiveEvent<>();
     private LocalRepository localRepository = new LocalRepositoryImpl();
 
     public LiveData<RealmList<GIFData>> getGifData() {
-        return listMutableLiveData;
+        return trendingList;
     }
 
     public LiveData<Boolean> getUploadFileSuccessResponse() {
@@ -37,21 +38,28 @@ public class RemoteRepositoryImpl implements RemoteRepository {
     public LiveData<String> getUploadFileErrorResponse() {
         return uploadFileError;
     }
+    public LiveData<RealmList<GIFData>> getRefreshTrendingList() {
+        return refreshTrendingList;
+    }
 
     public LiveData<Boolean> getLoadingGifsError(){
         return loadingGifsError;
     }
 
     @Override
-    public void loadTrendingGifs() {
+    public void loadTrendingGifs(final int offset) {
 
         GiphyAPI service = ServiceGenerator.createService(GiphyAPI.class);
 
-        service.getTrendingGIFs(0,20).enqueue(new Callback<GIFModel>() {
+        service.getTrendingGIFs(offset).enqueue(new Callback<GIFModel>() {
             @Override
             public void onResponse(Call<GIFModel> call, Response<GIFModel> response) {
                 if (response.isSuccessful()) {
-                    listMutableLiveData.postValue(response.body().getGifData());
+                    if (offset != 0) {
+                        trendingList.postValue(response.body().getGifData());
+                    } else {
+                        refreshTrendingList.postValue(response.body().getGifData());
+                    }
                     localRepository.saveGIFs(response.body().getGifData());
                     loadingGifsError.postValue(false);
                 }
@@ -59,7 +67,7 @@ public class RemoteRepositoryImpl implements RemoteRepository {
 
             @Override
             public void onFailure(Call<GIFModel> call, Throwable t) {
-                listMutableLiveData.postValue(localRepository.getGIFs());
+                trendingList.postValue(localRepository.getGIFs());
                 loadingGifsError.postValue(true);
             }
         });
@@ -69,11 +77,11 @@ public class RemoteRepositoryImpl implements RemoteRepository {
     public void searchGIF(String userInput) {
         GiphyAPI service = ServiceGenerator.createService(GiphyAPI.class);
 
-        service.searchGif(userInput, 10).enqueue(new Callback<GIFModel>() {
+        service.searchGif(userInput).enqueue(new Callback<GIFModel>() {
             @Override
             public void onResponse(Call<GIFModel> call, Response<GIFModel> response) {
                 if (response.isSuccessful()) {
-                    listMutableLiveData.postValue(response.body().getGifData());
+                    trendingList.postValue(response.body().getGifData());
                     localRepository.saveGIFs(response.body().getGifData());
                 }
             }
