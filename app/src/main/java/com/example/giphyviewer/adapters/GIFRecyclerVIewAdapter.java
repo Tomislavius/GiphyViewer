@@ -17,6 +17,8 @@ import com.example.giphyviewer.models.GIFData;
 
 import java.util.ArrayList;
 
+import io.realm.RealmList;
+
 public class GIFRecyclerVIewAdapter extends RecyclerView.Adapter<GIFRecyclerVIewAdapter.GIFViewHolder> {
 
     private ArrayList<GIFData> list = new ArrayList<>();
@@ -31,13 +33,15 @@ public class GIFRecyclerVIewAdapter extends RecyclerView.Adapter<GIFRecyclerVIew
 
     @Override
     public void onBindViewHolder(@NonNull final GIFViewHolder holder, final int position) {
-        Glide.with(holder.gif.getContext())
-                .asGif()
-                .load(list.get(position).getImages().getFixedHeight().getUrl())
-                .into(holder.gif);
 
+        loadGIF(holder, position);
+
+        openGIF(holder, position);
+    }
+
+    private void openGIF(@NonNull GIFViewHolder holder, int position) {
         final Bundle bundle = new Bundle();
-        bundle.putString("URL",list.get(position).getImages().getFixedHeight().getUrl());
+        bundle.putString("URL", list.get(position).getImages().getFixedHeight().getUrl());
 
         holder.gif.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,12 +52,19 @@ public class GIFRecyclerVIewAdapter extends RecyclerView.Adapter<GIFRecyclerVIew
         });
     }
 
+    private void loadGIF(@NonNull GIFViewHolder holder, int position) {
+        Glide.with(holder.gif.getContext())
+                .asGif()
+                .load(list.get(position).getImages().getPreview().getUrl())
+                .into(holder.gif);
+    }
+
     @Override
     public int getItemCount() {
         return list.size();
     }
 
-    public void setData(ArrayList<GIFData> list) {
+    public void setData(RealmList<GIFData> list) {
         this.list.clear();
         this.list.addAll(list);
         notifyDataSetChanged();

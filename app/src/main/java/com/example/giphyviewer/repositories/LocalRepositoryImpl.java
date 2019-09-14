@@ -2,27 +2,29 @@ package com.example.giphyviewer.repositories;
 
 import com.example.giphyviewer.models.GIFData;
 
-import java.util.ArrayList;
-
 import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class LocalRepositoryImpl implements LocalRepository {
 
     private Realm realm;
 
-    public LocalRepositoryImpl() {
+    LocalRepositoryImpl() {
         realm = Realm.getDefaultInstance();
     }
 
     @Override
-    public void saveGIFs(ArrayList<GIFData> gifData) {
-/*        realm.beginTransaction();
-        realm.insertOrUpdate((RealmModel) gifData);
-        realm.commitTransaction();*/
+    public void saveGIFs(RealmList<GIFData> gifData) {
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(gifData);
+        realm.commitTransaction();
     }
 
     @Override
-    public void getGIFs() {
-
+    public RealmList<GIFData> getGIFs() {
+        RealmList <GIFData> results = new RealmList<>();
+        results.addAll(realm.where(GIFData.class).findAll());
+        return results;
     }
 }

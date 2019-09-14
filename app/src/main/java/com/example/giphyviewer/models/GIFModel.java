@@ -3,16 +3,15 @@ package com.example.giphyviewer.models;
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 
-public class GIFModel {
+import io.realm.RealmList;
+import io.realm.RealmObject;
+
+public class GIFModel extends RealmObject {
 
     @SerializedName("data")
-    private ArrayList<GIFData> gifData;
+    private RealmList<GIFData> gifData;
 
-    public ArrayList<GIFData> getGifData() {
+    public RealmList<GIFData> getGifData() {
         return gifData;
-    }
-
-    public void setGifData(ArrayList<GIFData> gifData) {
-        this.gifData = gifData;
     }
 }

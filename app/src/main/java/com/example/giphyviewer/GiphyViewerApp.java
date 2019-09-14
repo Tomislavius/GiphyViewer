@@ -4,7 +4,7 @@ import android.app.Application;
 
 import io.realm.Realm;
 
-public class GiphyViewerAplication extends Application {
+public class GiphyViewerApp extends Application {
 
     @Override
     public void onCreate() {

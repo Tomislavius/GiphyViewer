@@ -6,7 +6,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".TrendingGifsFragment">
+        tools:context=".trendinggifs.TrendingGifsFragment">
 
         <EditText
             android:id="@+id/search_et"
@@ -37,6 +37,16 @@
             app:spanCount="2" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <TextView
+            android:id="@+id/connection_error"
+            android:visibility="gone"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:text="No internet connection"
+            android:background="@android:color/holo_red_dark"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

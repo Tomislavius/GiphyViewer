@@ -1,28 +1,34 @@
 package com.example.giphyviewer.trendinggifs;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.giphyviewer.models.GIFData;
 import com.example.giphyviewer.repositories.RemoteRepositoryImpl;
 
-import java.util.ArrayList;
+import io.realm.RealmList;
 
 public class TrendingGifsViewModel extends ViewModel {
 
-    private RemoteRepositoryImpl remoteRepository = new RemoteRepositoryImpl();
-    private MediatorLiveData<ArrayList<GIFData>> gifData = new MediatorLiveData<>();
+    public TrendingGifsViewModel() {
+        loadTrendingGifs();
+    }
 
-    public LiveData<ArrayList<GIFData>> getData() {
+    private RemoteRepositoryImpl remoteRepository = new RemoteRepositoryImpl();
+
+    LiveData<RealmList<GIFData>> getData() {
         return remoteRepository.getGifData();
     }
 
-    public void getResultsFromSearch(String userInput){
+    void getResultsFromSearch(String userInput){
         remoteRepository.searchGIF(userInput);
     }
 
-    public void loadTrendingGifs() {
+    void loadTrendingGifs() {
         remoteRepository.loadTrendingGifs();
+    }
+
+    LiveData<Boolean> getLoadingGifsError(){
+        return remoteRepository.getLoadingGifsError();
     }
 }
