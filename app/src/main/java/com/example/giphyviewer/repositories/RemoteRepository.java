@@ -10,13 +10,13 @@ import okhttp3.MultipartBody;
 
 public interface RemoteRepository {
 
-    LiveData<RealmList<GifData>> getTrendingList();
+    LiveData<RealmList<GifData>> getPaginationList();
 
     LiveData<Boolean> getUploadFileSuccessResponse();
 
     LiveData<String> getUploadFileErrorResponse();
 
-    LiveData<GifModel> getRefreshTrendingList();
+    LiveData<GifModel> getRefreshList();
 
     LiveData<Boolean> getLoadingGifsError();
 

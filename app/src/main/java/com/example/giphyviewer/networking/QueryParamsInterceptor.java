@@ -2,7 +2,7 @@ package com.example.giphyviewer.networking;
 
 import androidx.annotation.NonNull;
 
-import com.example.giphyviewer.Constants;
+import com.example.giphyviewer.helper.Constants;
 
 import java.io.IOException;
 

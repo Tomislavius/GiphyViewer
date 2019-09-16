@@ -1,4 +1,4 @@
-package com.example.giphyviewer.trendinggifs;
+package com.example.giphyviewer.trending;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
@@ -19,7 +19,7 @@ public class TrendingGifsViewModel extends ViewModel {
     }
 
     LiveData<RealmList<GifData>> getTrendingList() {
-        return remoteRepository.getTrendingList();
+        return remoteRepository.getPaginationList();
     }
 
     void getResultsFromSearch(int offset, String userInput){
@@ -35,7 +35,7 @@ public class TrendingGifsViewModel extends ViewModel {
     }
 
     LiveData<GifModel> getRefreshTrendingList() {
-        return remoteRepository.getRefreshTrendingList();
+        return remoteRepository.getRefreshList();
     }
 
     LiveData<String> getResponseInformation(){

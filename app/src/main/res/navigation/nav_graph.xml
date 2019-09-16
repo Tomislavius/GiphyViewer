@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/giphyTrendingFragment"
-        android:name="com.example.giphyviewer.trendinggifs.TrendingGifsFragment"
+        android:name="com.example.giphyviewer.trending.TrendingGifsFragment"
         android:label="fragment_giphy_trending"
         tools:layout="@layout/fragment_giphy_trending">
         
@@ -18,7 +18,7 @@
 
     <fragment
         android:id="@+id/showGIFFragment"
-        android:name="com.example.giphyviewer.ShowGifFragment"
+        android:name="com.example.giphyviewer.showgif.ShowGifFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:label="fragment_show_gif"

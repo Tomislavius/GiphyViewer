@@ -1,6 +1,7 @@
-package com.example.giphyviewer;
+package com.example.giphyviewer.activities;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -20,7 +21,10 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.giphyviewer.R;
 import com.example.giphyviewer.databinding.ActivityMainBinding;
+import com.example.giphyviewer.helper.Constants;
+import com.example.giphyviewer.helper.Utils;
 
 import java.io.File;
 
@@ -33,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private String selectedVideoPath;
     private ActivityMainBinding binding;
     private MainActivityViewModel viewModel;
+    private ProgressDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if (aBoolean != null && aBoolean) {
+                    if (loadingDialog != null && loadingDialog.isShowing()) {
+                        loadingDialog.dismiss();
+                    }
                     Toast.makeText(MainActivity.this, MainActivity.this
                             .getString(R.string.file_upload_success), Toast.LENGTH_SHORT).show();
                 }
@@ -71,8 +79,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChanged(String errorMessage) {
                 if (errorMessage != null) {
+                    if (loadingDialog != null && loadingDialog.isShowing()) {
+                        loadingDialog.dismiss();
+                    }
                     Toast.makeText(MainActivity.this, MainActivity.this
-                            .getString(R.string.file_upload_error) + errorMessage,
+                                    .getString(R.string.file_upload_error) + errorMessage,
                             Toast.LENGTH_SHORT).show();
                 }
             }
@@ -106,11 +117,20 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     MultipartBody.Part body = createRequestBodyFromFile();
                     viewModel.uploadFile(body);
+                    showLoadingDialog();
                 }
             } catch (Exception e) {
                 Log.e("FileSelectorActivity", getString(R.string.file_select_error), e);
             }
         }
+    }
+
+    private void showLoadingDialog() {
+        loadingDialog = ProgressDialog.show(MainActivity.this, "",
+                getString(R.string.uploading_file), true);
+        loadingDialog.setCanceledOnTouchOutside(false);
+        loadingDialog.setCancelable(false);
+        loadingDialog.show();
     }
 
     private MultipartBody.Part createRequestBodyFromFile() {

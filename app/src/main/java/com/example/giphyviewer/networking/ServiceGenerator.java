@@ -1,6 +1,6 @@
 package com.example.giphyviewer.networking;
 
-import com.example.giphyviewer.Constants;
+import com.example.giphyviewer.helper.Constants;
 
 import java.util.concurrent.TimeUnit;
 
@@ -8,7 +8,7 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.example.giphyviewer.Constants.DEFAULT_TIMEOUT;
+import static com.example.giphyviewer.helper.Constants.DEFAULT_TIMEOUT;
 
 public class ServiceGenerator {
 

@@ -6,14 +6,14 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/giphy_background_color"
-        tools:context=".ShowGifFragment">
+        android:background="@color/colorPrimaryDark"
+        tools:context=".showgif.ShowGifFragment">
 
         <ImageView
             android:id="@+id/gif_full_screen_iv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="8dp" />
+            android:layout_margin="@dimen/margin_8" />
 
     </FrameLayout>
 </layout>

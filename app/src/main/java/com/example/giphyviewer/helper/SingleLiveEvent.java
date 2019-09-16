@@ -1,4 +1,4 @@
-package com.example.giphyviewer;
+package com.example.giphyviewer.helper;
 
 import android.util.Log;
 

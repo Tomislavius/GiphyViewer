@@ -1,4 +1,4 @@
-package com.example.giphyviewer.adapters;
+package com.example.giphyviewer.trending;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.giphyviewer.R;
+import com.example.giphyviewer.helper.Constants;
 import com.example.giphyviewer.models.GifData;
 import com.example.giphyviewer.models.GifModel;
 
@@ -26,7 +27,7 @@ public class GifRecyclerVIewAdapter extends RecyclerView.Adapter<GifRecyclerVIew
     private OnLoadMoreListener loadMoreListener;
     private boolean isFromSearch;
 
-    public GifRecyclerVIewAdapter(OnLoadMoreListener loadMoreListener){
+    GifRecyclerVIewAdapter(OnLoadMoreListener loadMoreListener) {
         this.loadMoreListener = loadMoreListener;
     }
 
@@ -43,8 +44,7 @@ public class GifRecyclerVIewAdapter extends RecyclerView.Adapter<GifRecyclerVIew
         loadGif(holder, position);
         openGIF(holder, position);
 
-        // TODO: check if this works with ==
-        boolean isLastItem = position == (getItemCount() - 1);
+        boolean isLastItem = position >= (getItemCount() - 1);
         if (isLastItem) {
             loadMoreListener.onLoadMore(getItemCount(), isFromSearch);
         }
@@ -52,7 +52,7 @@ public class GifRecyclerVIewAdapter extends RecyclerView.Adapter<GifRecyclerVIew
 
     private void openGIF(@NonNull GifViewHolder holder, int position) {
         final Bundle bundle = new Bundle();
-        bundle.putString("URL", list.get(position).getImages().getFixedHeight().getUrl());
+        bundle.putString(Constants.GIF_URL, list.get(position).getImages().getFixedHeight().getUrl());
 
         holder.gif.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,14 +75,14 @@ public class GifRecyclerVIewAdapter extends RecyclerView.Adapter<GifRecyclerVIew
         return list.size();
     }
 
-    public void setRefreshedListOfTrendingGifs(GifModel gifModel) {
+    void setRefreshedListOfTrendingGifs(GifModel gifModel) {
         list.clear();
         isFromSearch = gifModel.isFromSearch();
         list.addAll(gifModel.getGifData());
         notifyDataSetChanged();
     }
 
-    public void setTrendingListWithPagination(RealmList<GifData> list){
+    void setTrendingListWithPagination(RealmList<GifData> list) {
         this.list.addAll(list);
         notifyItemRangeInserted(getItemCount() - list.size(), list.size());
     }

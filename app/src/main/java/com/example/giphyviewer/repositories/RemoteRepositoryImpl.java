@@ -4,8 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.giphyviewer.Constants;
-import com.example.giphyviewer.SingleLiveEvent;
+import com.example.giphyviewer.helper.Constants;
+import com.example.giphyviewer.helper.SingleLiveEvent;
 import com.example.giphyviewer.models.GifData;
 import com.example.giphyviewer.models.GifModel;
 import com.example.giphyviewer.networking.GiphyAPI;
@@ -19,8 +19,8 @@ import retrofit2.Response;
 
 public class RemoteRepositoryImpl implements RemoteRepository {
 
-    private MutableLiveData<RealmList<GifData>> trendingList = new MutableLiveData<>();
-    private MutableLiveData<GifModel> refreshTrendingList = new MutableLiveData<>();
+    private MutableLiveData<RealmList<GifData>> paginationList = new MutableLiveData<>();
+    private MutableLiveData<GifModel> refreshList = new MutableLiveData<>();
     private MutableLiveData<Boolean> loadingGifsError = new MutableLiveData<>();
     private SingleLiveEvent<Boolean> uploadFileSuccess = new SingleLiveEvent<>();
     private SingleLiveEvent<String> uploadFileError = new SingleLiveEvent<>();
@@ -28,8 +28,8 @@ public class RemoteRepositoryImpl implements RemoteRepository {
     private LocalRepository localRepository = new LocalRepositoryImpl();
 
     @Override
-    public LiveData<RealmList<GifData>> getTrendingList() {
-        return trendingList;
+    public LiveData<RealmList<GifData>> getPaginationList() {
+        return paginationList;
     }
 
     @Override
@@ -43,8 +43,8 @@ public class RemoteRepositoryImpl implements RemoteRepository {
     }
 
     @Override
-    public LiveData<GifModel> getRefreshTrendingList() {
-        return refreshTrendingList;
+    public LiveData<GifModel> getRefreshList() {
+        return refreshList;
     }
 
     @Override
@@ -64,19 +64,17 @@ public class RemoteRepositoryImpl implements RemoteRepository {
         service.getTrendingGifs(offset).enqueue(new Callback<GifModel>() {
             @Override
             public void onResponse(@NonNull Call<GifModel> call, @NonNull Response<GifModel> response) {
-                // TODO: Add clear description to explain separation of 2 scenarios
-                // 1. initial data loading and swipe to refresh
-                // 2. paging loading data
+
                 GifModel body = response.body();
                 if (response.isSuccessful()) {
                     if (offset != 0) {
                         assert response.body() != null;
-                        trendingList.postValue(response.body().getGifData());
+                        paginationList.postValue(response.body().getGifData());
                     } else {
-                        //TODO Flag for adapter to decide is it list from trending or search API call
+                        //Flag for adapter to decide is it list from trending or search API call
                         assert body != null;
                         body.setFromSearch(false);
-                        refreshTrendingList.postValue(body);
+                        refreshList.postValue(body);
                     }
                     assert response.body() != null;
                     localRepository.saveTrendingGifsToLocalDatabase(response.body().getGifData());
@@ -88,7 +86,7 @@ public class RemoteRepositoryImpl implements RemoteRepository {
 
             @Override
             public void onFailure(@NonNull Call<GifModel> call, @NonNull Throwable t) {
-                trendingList.postValue(localRepository.getTrendingGifsFromLocalDatabase());
+                paginationList.postValue(localRepository.getTrendingGifsFromLocalDatabase());
                 loadingGifsError.postValue(true);
             }
         });
@@ -104,13 +102,13 @@ public class RemoteRepositoryImpl implements RemoteRepository {
                 if (response.isSuccessful()) {
                     if (offset != 0) {
                         assert response.body() != null;
-                        trendingList.postValue(response.body().getGifData());
+                        paginationList.postValue(response.body().getGifData());
                     } else {
                         GifModel body = response.body();
-                        //TODO Flag for adapter to decide is it list from trending or search API call
                         assert body != null;
+                        //Flag for adapter to decide is it list from trending or search API call
                         body.setFromSearch(true);
-                        refreshTrendingList.postValue(body);
+                        refreshList.postValue(body);
                     }
                 } else {
                     responseInformation.setValue(String.valueOf(response.code()));
@@ -119,7 +117,6 @@ public class RemoteRepositoryImpl implements RemoteRepository {
 
             @Override
             public void onFailure(@NonNull Call<GifModel> call, @NonNull Throwable t) {
-                //TODO hendlati failure
                 loadingGifsError.postValue(true);
             }
         });

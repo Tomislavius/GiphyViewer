@@ -1,4 +1,4 @@
-package com.example.giphyviewer;
+package com.example.giphyviewer.activities;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
