@@ -3,7 +3,7 @@ package com.example.giphyviewer.models;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class GIFData extends RealmObject {
+public class GifData extends RealmObject {
 
     private Images images;
     @PrimaryKey
@@ -11,10 +11,6 @@ public class GIFData extends RealmObject {
 
     public Images getImages() {
         return images;
-    }
-
-    public void setImages(Images images) {
-        this.images = images;
     }
 
     public String getId() {

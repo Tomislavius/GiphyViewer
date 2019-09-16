@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import io.realm.RealmObject;
 
 public class Images extends RealmObject {
-
     @SerializedName("fixed_height")
     private FixedHeight fixedHeight;
     @SerializedName("preview_gif")

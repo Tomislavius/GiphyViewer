@@ -15,9 +15,9 @@
             android:layout_margin="@dimen/fab_margin"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@android:drawable/ic_dialog_email" />
+            android:background="#626262"
+            app:srcCompat="@android:drawable/ic_menu_upload_you_tube" />
 
-        <!-- TODO promijeniti ikonu FAB -->
         <fragment
             android:id="@+id/nav_host_fragment"
             android:name="androidx.navigation.fragment.NavHostFragment"

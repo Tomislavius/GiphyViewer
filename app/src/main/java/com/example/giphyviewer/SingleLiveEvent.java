@@ -37,9 +37,9 @@ public final class SingleLiveEvent<T> extends MutableLiveData<T> {
         super.observe(owner, new Observer<T>() {
             @Override
             public void onChanged(@Nullable T t) {
-                if (mPending.compareAndSet(true, false)) {
-                    observer.onChanged(t);
-                }
+            if (mPending.compareAndSet(true, false)) {
+                observer.onChanged(t);
+            }
             }
         });
     }
@@ -48,13 +48,5 @@ public final class SingleLiveEvent<T> extends MutableLiveData<T> {
     public void setValue(@Nullable T t) {
         mPending.set(true);
         super.setValue(t);
-    }
-
-    /**
-     * Used for cases where T is Void, to make calls cleaner.
-     */
-    @MainThread
-    public void call() {
-        setValue(null);
     }
 }

@@ -1,12 +1,13 @@
 package com.example.giphyviewer.repositories;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.giphyviewer.Constants;
 import com.example.giphyviewer.SingleLiveEvent;
-import com.example.giphyviewer.models.GIFData;
-import com.example.giphyviewer.models.GIFModel;
+import com.example.giphyviewer.models.GifData;
+import com.example.giphyviewer.models.GifModel;
 import com.example.giphyviewer.networking.GiphyAPI;
 import com.example.giphyviewer.networking.ServiceGenerator;
 
@@ -18,77 +19,108 @@ import retrofit2.Response;
 
 public class RemoteRepositoryImpl implements RemoteRepository {
 
-    private MutableLiveData<RealmList<GIFData>> trendingList = new MutableLiveData<>();
-
-
-    private MutableLiveData<RealmList<GIFData>> refreshTrendingList = new MutableLiveData<>();
+    private MutableLiveData<RealmList<GifData>> trendingList = new MutableLiveData<>();
+    private MutableLiveData<GifModel> refreshTrendingList = new MutableLiveData<>();
     private MutableLiveData<Boolean> loadingGifsError = new MutableLiveData<>();
     private SingleLiveEvent<Boolean> uploadFileSuccess = new SingleLiveEvent<>();
     private SingleLiveEvent<String> uploadFileError = new SingleLiveEvent<>();
+    private SingleLiveEvent<String> responseInformation = new SingleLiveEvent<>();
     private LocalRepository localRepository = new LocalRepositoryImpl();
 
-    public LiveData<RealmList<GIFData>> getGifData() {
+    @Override
+    public LiveData<RealmList<GifData>> getTrendingList() {
         return trendingList;
     }
 
+    @Override
     public LiveData<Boolean> getUploadFileSuccessResponse() {
         return uploadFileSuccess;
     }
 
+    @Override
     public LiveData<String> getUploadFileErrorResponse() {
         return uploadFileError;
     }
-    public LiveData<RealmList<GIFData>> getRefreshTrendingList() {
+
+    @Override
+    public LiveData<GifModel> getRefreshTrendingList() {
         return refreshTrendingList;
     }
 
-    public LiveData<Boolean> getLoadingGifsError(){
+    @Override
+    public LiveData<Boolean> getLoadingGifsError() {
         return loadingGifsError;
     }
 
     @Override
-    public void loadTrendingGifs(final int offset) {
+    public LiveData<String> getResponseInformation() {
+        return responseInformation;
+    }
 
+    @Override
+    public void loadTrendingGifs(final int offset) {
         GiphyAPI service = ServiceGenerator.createService(GiphyAPI.class);
 
-        service.getTrendingGIFs(offset).enqueue(new Callback<GIFModel>() {
+        service.getTrendingGifs(offset).enqueue(new Callback<GifModel>() {
             @Override
-            public void onResponse(Call<GIFModel> call, Response<GIFModel> response) {
+            public void onResponse(@NonNull Call<GifModel> call, @NonNull Response<GifModel> response) {
+                // TODO: Add clear description to explain separation of 2 scenarios
+                // 1. initial data loading and swipe to refresh
+                // 2. paging loading data
+                GifModel body = response.body();
                 if (response.isSuccessful()) {
                     if (offset != 0) {
+                        assert response.body() != null;
                         trendingList.postValue(response.body().getGifData());
                     } else {
-                        refreshTrendingList.postValue(response.body().getGifData());
+                        //TODO Flag for adapter to decide is it list from trending or search API call
+                        assert body != null;
+                        body.setFromSearch(false);
+                        refreshTrendingList.postValue(body);
                     }
-                    localRepository.saveGIFs(response.body().getGifData());
+                    assert response.body() != null;
+                    localRepository.saveTrendingGifsToLocalDatabase(response.body().getGifData());
                     loadingGifsError.postValue(false);
+                } else {
+                    responseInformation.setValue(String.valueOf(response.code()));
                 }
             }
 
             @Override
-            public void onFailure(Call<GIFModel> call, Throwable t) {
-                trendingList.postValue(localRepository.getGIFs());
+            public void onFailure(@NonNull Call<GifModel> call, @NonNull Throwable t) {
+                trendingList.postValue(localRepository.getTrendingGifsFromLocalDatabase());
                 loadingGifsError.postValue(true);
             }
         });
     }
 
     @Override
-    public void searchGIF(String userInput) {
+    public void searchGIF(final int offset, String userInput) {
         GiphyAPI service = ServiceGenerator.createService(GiphyAPI.class);
 
-        service.searchGif(userInput).enqueue(new Callback<GIFModel>() {
+        service.searchGif(userInput, offset).enqueue(new Callback<GifModel>() {
             @Override
-            public void onResponse(Call<GIFModel> call, Response<GIFModel> response) {
+            public void onResponse(@NonNull Call<GifModel> call, @NonNull Response<GifModel> response) {
                 if (response.isSuccessful()) {
-                    trendingList.postValue(response.body().getGifData());
-                    localRepository.saveGIFs(response.body().getGifData());
+                    if (offset != 0) {
+                        assert response.body() != null;
+                        trendingList.postValue(response.body().getGifData());
+                    } else {
+                        GifModel body = response.body();
+                        //TODO Flag for adapter to decide is it list from trending or search API call
+                        assert body != null;
+                        body.setFromSearch(true);
+                        refreshTrendingList.postValue(body);
+                    }
+                } else {
+                    responseInformation.setValue(String.valueOf(response.code()));
                 }
             }
 
             @Override
-            public void onFailure(Call<GIFModel> call, Throwable t) {
+            public void onFailure(@NonNull Call<GifModel> call, @NonNull Throwable t) {
                 //TODO hendlati failure
+                loadingGifsError.postValue(true);
             }
         });
     }
@@ -98,7 +130,7 @@ public class RemoteRepositoryImpl implements RemoteRepository {
         GiphyAPI service = ServiceGenerator.createService(GiphyAPI.class);
         service.uploadGIF(Constants.UPLOAD_FILE_URL, body).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
                     uploadFileSuccess.postValue(true);
                 } else {
@@ -107,7 +139,7 @@ public class RemoteRepositoryImpl implements RemoteRepository {
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 uploadFileError.postValue(t.getMessage());
             }
         });

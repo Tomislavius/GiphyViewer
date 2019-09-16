@@ -1,6 +1,6 @@
 package com.example.giphyviewer.networking;
 
-import com.example.giphyviewer.models.GIFModel;
+import com.example.giphyviewer.models.GifModel;
 
 import okhttp3.MultipartBody;
 import retrofit2.Call;
@@ -14,10 +14,10 @@ import retrofit2.http.Url;
 public interface GiphyAPI {
 
     @GET("trending")
-    Call<GIFModel> getTrendingGIFs(@Query("offset") int offset);
+    Call<GifModel> getTrendingGifs(@Query("offset") int offset);
 
     @GET("search")
-    Call<GIFModel> searchGif(@Query("q") String q);
+    Call<GifModel> searchGif(@Query("q") String q, @Query("offset") int offset);
 
     @Multipart
     @POST()

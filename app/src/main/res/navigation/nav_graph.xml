@@ -18,7 +18,7 @@
 
     <fragment
         android:id="@+id/showGIFFragment"
-        android:name="com.example.giphyviewer.ShowGIFFragment"
+        android:name="com.example.giphyviewer.ShowGifFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:label="fragment_show_gif"

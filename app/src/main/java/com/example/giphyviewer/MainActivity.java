@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -45,7 +46,12 @@ public class MainActivity extends AppCompatActivity {
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkForPermission();
+                if (!Utils.isNetworkConnected(MainActivity.this)) {
+                    Toast.makeText(MainActivity.this, MainActivity.this
+                            .getString(R.string.check_internet_connection), Toast.LENGTH_SHORT).show();
+                } else {
+                    checkForPermission();
+                }
             }
         });
     }
@@ -55,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if (aBoolean != null && aBoolean) {
-                    Toast.makeText(MainActivity.this, "File upload success", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, MainActivity.this
+                            .getString(R.string.file_upload_success), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -63,9 +70,10 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getUploadFileErrorResponse().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String errorMessage) {
-                if (errorMessage != null){
-                    Toast.makeText(MainActivity.this, "File upload error: "
-                            + errorMessage, Toast.LENGTH_SHORT).show();
+                if (errorMessage != null) {
+                    Toast.makeText(MainActivity.this, MainActivity.this
+                            .getString(R.string.file_upload_error) + errorMessage,
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -73,33 +81,34 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
-        if (requestCode == Constants.READ_EXTERNAL_STORAGE_PERMISSION_CODE) {// If request is cancelled, the result arrays are empty.
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                binding.fab.performClick();
-            } else {
-                Toast.makeText(this, "Permission is needed to read file from gallery", Toast.LENGTH_SHORT).show();
-            }
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode != Constants.READ_EXTERNAL_STORAGE_PERMISSION_CODE) {
+            return;
+        }
+
+        if (grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            binding.fab.performClick();
+        } else {
+            Toast.makeText(this, this.getString(R.string.permission_needed), Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == Constants.SELECT_VIDEO) {
-                selectedVideoPath = getPath(data.getData());
-                try {
-                    if (selectedVideoPath == null) {
-                        Toast.makeText(this, "Selected file not found!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        MultipartBody.Part body = createRequestBodyFromFile();
-                        viewModel.uploadFile(body);
-                    }
-                } catch (Exception e) {
-                    Log.e("FileSelectorActivity", "File select error", e);
+        if (resultCode == RESULT_OK && requestCode == Constants.SELECT_VIDEO) {
+            assert data != null;
+            selectedVideoPath = getPath(data.getData());
+            try {
+                if (selectedVideoPath == null) {
+                    Toast.makeText(this, this.getString(R.string.file_not_found), Toast.LENGTH_SHORT).show();
+                } else {
+                    MultipartBody.Part body = createRequestBodyFromFile();
+                    viewModel.uploadFile(body);
                 }
+            } catch (Exception e) {
+                Log.e("FileSelectorActivity", getString(R.string.file_select_error), e);
             }
         }
     }

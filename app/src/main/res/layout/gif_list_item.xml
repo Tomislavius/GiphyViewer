@@ -3,12 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/cardview_dark_background">
+    android:background="@color/giphy_background_color">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/gif_iv"
-        android:layout_margin="4dp"/>
+        android:layout_margin="4dp"
+        android:layout_gravity="center_vertical"/>
 
 </LinearLayout>

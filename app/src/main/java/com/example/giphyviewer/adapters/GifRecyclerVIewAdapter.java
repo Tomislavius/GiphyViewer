@@ -13,39 +13,44 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.giphyviewer.R;
-import com.example.giphyviewer.models.GIFData;
+import com.example.giphyviewer.models.GifData;
+import com.example.giphyviewer.models.GifModel;
 
 import java.util.ArrayList;
 
 import io.realm.RealmList;
 
-public class GIFRecyclerVIewAdapter extends RecyclerView.Adapter<GIFRecyclerVIewAdapter.GIFViewHolder> {
+public class GifRecyclerVIewAdapter extends RecyclerView.Adapter<GifRecyclerVIewAdapter.GifViewHolder> {
 
-    private ArrayList<GIFData> list = new ArrayList<>();
+    private ArrayList<GifData> list = new ArrayList<>();
     private OnLoadMoreListener loadMoreListener;
+    private boolean isFromSearch;
 
-    public GIFRecyclerVIewAdapter(OnLoadMoreListener loadMoreListener){
+    public GifRecyclerVIewAdapter(OnLoadMoreListener loadMoreListener){
         this.loadMoreListener = loadMoreListener;
     }
 
     @NonNull
     @Override
-    public GIFViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public GifViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.gif_list_item, parent, false);
-        return new GIFViewHolder(view);
+        return new GifViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final GIFViewHolder holder, final int position) {
-        loadGIF(holder, position);
+    public void onBindViewHolder(@NonNull final GifViewHolder holder, final int position) {
+        loadGif(holder, position);
         openGIF(holder, position);
-        if (position >= (getItemCount() - 1)) {
-            loadMoreListener.onLoadMore(getItemCount());
+
+        // TODO: check if this works with ==
+        boolean isLastItem = position == (getItemCount() - 1);
+        if (isLastItem) {
+            loadMoreListener.onLoadMore(getItemCount(), isFromSearch);
         }
     }
 
-    private void openGIF(@NonNull GIFViewHolder holder, int position) {
+    private void openGIF(@NonNull GifViewHolder holder, int position) {
         final Bundle bundle = new Bundle();
         bundle.putString("URL", list.get(position).getImages().getFixedHeight().getUrl());
 
@@ -58,7 +63,7 @@ public class GIFRecyclerVIewAdapter extends RecyclerView.Adapter<GIFRecyclerVIew
         });
     }
 
-    private void loadGIF(@NonNull GIFViewHolder holder, int position) {
+    private void loadGif(@NonNull GifViewHolder holder, int position) {
         Glide.with(holder.gif.getContext())
                 .asGif()
                 .load(list.get(position).getImages().getPreview().getUrl())
@@ -70,27 +75,28 @@ public class GIFRecyclerVIewAdapter extends RecyclerView.Adapter<GIFRecyclerVIew
         return list.size();
     }
 
-    public void setData(RealmList<GIFData> list) {
-        this.list.clear();
-        this.list.addAll(list);
+    public void setRefreshedListOfTrendingGifs(GifModel gifModel) {
+        list.clear();
+        isFromSearch = gifModel.isFromSearch();
+        list.addAll(gifModel.getGifData());
         notifyDataSetChanged();
     }
 
-    public void addData(RealmList<GIFData> list){
+    public void setTrendingListWithPagination(RealmList<GifData> list){
         this.list.addAll(list);
         notifyItemRangeInserted(getItemCount() - list.size(), list.size());
     }
 
-    class GIFViewHolder extends RecyclerView.ViewHolder {
+    class GifViewHolder extends RecyclerView.ViewHolder {
         private ImageView gif;
 
-        GIFViewHolder(@NonNull View itemView) {
+        GifViewHolder(@NonNull View itemView) {
             super(itemView);
             gif = itemView.findViewById(R.id.gif_iv);
         }
     }
 
     public interface OnLoadMoreListener {
-        void onLoadMore(int i);
+        void onLoadMore(int i, boolean isFromSearch);
     }
 }

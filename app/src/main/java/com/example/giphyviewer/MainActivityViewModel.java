@@ -7,6 +7,7 @@ import com.example.giphyviewer.repositories.RemoteRepositoryImpl;
 
 import okhttp3.MultipartBody;
 
+@SuppressWarnings("WeakerAccess")
 public class MainActivityViewModel extends ViewModel {
 
     private RemoteRepositoryImpl repository = new RemoteRepositoryImpl();

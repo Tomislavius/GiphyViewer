@@ -11,16 +11,14 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.example.giphyviewer.databinding.FragmentShowGifBinding;
 
-public class ShowGIFFragment extends Fragment {
+public class ShowGifFragment extends Fragment {
 
-    private String url;
     private FragmentShowGifBinding binding;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        url = getArguments().get("URL").toString();
+        String url = getArguments().get("URL").toString();
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_show_gif, container, false);
 
@@ -33,6 +31,7 @@ public class ShowGIFFragment extends Fragment {
         Glide.with(this)
                 .asGif()
                 .load(url)
+                .error(R.drawable.no_image_available)
                 .into(binding.gifFullScreenIv);
     }
 }

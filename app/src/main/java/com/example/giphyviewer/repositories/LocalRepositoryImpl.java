@@ -1,10 +1,9 @@
 package com.example.giphyviewer.repositories;
 
-import com.example.giphyviewer.models.GIFData;
+import com.example.giphyviewer.models.GifData;
 
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmResults;
 
 public class LocalRepositoryImpl implements LocalRepository {
 
@@ -15,16 +14,16 @@ public class LocalRepositoryImpl implements LocalRepository {
     }
 
     @Override
-    public void saveGIFs(RealmList<GIFData> gifData) {
+    public void saveTrendingGifsToLocalDatabase(RealmList<GifData> gifData) {
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(gifData);
         realm.commitTransaction();
     }
 
     @Override
-    public RealmList<GIFData> getGIFs() {
-        RealmList <GIFData> results = new RealmList<>();
-        results.addAll(realm.where(GIFData.class).findAll());
+    public RealmList<GifData> getTrendingGifsFromLocalDatabase() {
+        RealmList <GifData> results = new RealmList<>();
+        results.addAll(realm.where(GifData.class).findAll());
         return results;
     }
 }
