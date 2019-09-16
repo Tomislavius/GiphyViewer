@@ -130,11 +130,13 @@ public class TrendingGifsFragment extends Fragment implements GifRecyclerVIewAda
 
     @Override
     public void onLoadMore(int offset, boolean isFromSearch) {
-        if (isFromSearch) {
-            viewModel.getResultsFromSearch(offset, userInput);
-        } else {
-            viewModel.loadTrendingGifs(offset);
+        if (Utils.isNetworkConnected(getContext())) {
+            if (isFromSearch) {
+                viewModel.getResultsFromSearch(offset, userInput);
+            } else {
+                viewModel.loadTrendingGifs(offset);
+            }
+            binding.progressBarLoadMorePb.setVisibility(View.VISIBLE);
         }
-        binding.progressBarLoadMorePb.setVisibility(View.VISIBLE);
     }
 }
